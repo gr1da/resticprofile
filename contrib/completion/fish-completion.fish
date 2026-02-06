@@ -64,7 +64,7 @@ function __resticprofile_completion
 
         for value in $restic_values
             #remove empty values
-            string match --regex '^[\r\n\t ]+$' -- "$value"; and return
+            string match --quiet --regex '^[\r\n\t ]+$' -- "$value"; and continue
 
             #add prefix back to completion if applicable
             if test -n $prefix && test "$prefix" != "$suffix"
