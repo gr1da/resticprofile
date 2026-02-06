@@ -29,6 +29,7 @@ type Completer struct {
 	ownCommands           []ownCommand
 	profiles              []string
 	enableProfilePrefixes bool
+	includeDescription    bool
 }
 
 type FlagsLoader func(args []string) *pflag.FlagSet
@@ -38,8 +39,8 @@ func DefaultFlagsLoader(args []string) (flags *pflag.FlagSet) {
 	return
 }
 
-func NewCompleter(commands []ownCommand, loader FlagsLoader) *Completer {
-	return &Completer{ownCommands: commands, loader: loader}
+func NewCompleter(commands []ownCommand, loader FlagsLoader, includeDescription bool) *Completer {
+	return &Completer{ownCommands: commands, loader: loader, includeDescription: includeDescription}
 }
 
 func (c *Completer) init(args []string) {
@@ -63,10 +64,15 @@ func (c *Completer) init(args []string) {
 }
 
 func (c *Completer) formatFlag(flag *pflag.Flag, shorthand bool) string {
+	description := ""
+	if c.includeDescription {
+		description = fmt.Sprintf("\t%s", flag.Usage)
+	}
+
 	if shorthand {
-		return fmt.Sprintf("-%s", flag.Shorthand)
+		return fmt.Sprintf("-%s%s", flag.Shorthand, description)
 	} else {
-		return fmt.Sprintf("--%s", flag.Name)
+		return fmt.Sprintf("--%s%s", flag.Name, description)
 	}
 }
 
@@ -169,7 +175,10 @@ func (c *Completer) completeProfileNamePrefixes(word string) (completions []stri
 }
 
 func (c *Completer) formatOwnCommand(command ownCommand) string {
-	return command.name
+	if !c.includeDescription {
+		return command.name
+	}
+	return fmt.Sprintf("%s\t%s", command.name, command.description)
 }
 
 func (c *Completer) completeOwnCommands(word string) (completions []string) {
