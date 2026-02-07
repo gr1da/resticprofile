@@ -267,8 +267,11 @@ func (c *Completer) toCompletionsWithProfilePrefix(completions []string, profile
 }
 
 func (c *Completer) isOwnCommand(command string, configurationLoaded bool) bool {
+	//strip description, if any
+	commandName := strings.SplitN(command, "\t", 2)[0]
+
 	for _, commandDef := range c.ownCommands {
-		if commandDef.name == command && commandDef.needConfiguration == configurationLoaded {
+		if commandDef.name == commandName && commandDef.needConfiguration == configurationLoaded {
 			return true
 		}
 	}
