@@ -28,7 +28,7 @@ function __resticprofile_completion
         #do path completion
         set --append completions (__fish_complete_path "$file")
 
-    case "__complete_restic"
+    case "*__complete_restic"
         #string match --regex returns list where first element is the whole string
         #and the rest are capture group matches.
         set --local prefix (string match --regex '^(.*)\.' -- "$completions[-1]")[2]
